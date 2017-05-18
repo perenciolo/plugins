@@ -1,10 +1,4 @@
 <?php
-
-
-
-
-
-
 /*
 Name: Snappy List Builder
 Plugin URI:  http://www.blackowl.com.br
