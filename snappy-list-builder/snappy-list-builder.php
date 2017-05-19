@@ -256,30 +256,40 @@ function slb_save_subscription() {
         if ( !strlen( $subscriber_data['email']) ) $errors['email'] = 'Email address is required';
         if ( !strlen( $subscriber_data['email']) && !is_email( $subscriber_data['email'] ) ) $errors['email'] = 'Email address must be valid';
 
-        // attempt to create/save subscriber
-        $subscriber_id = slb_save_subscriber( $subscriber_data );
+        // IF there are errors 
+        if ( count($errors) ) {
+            // append errors to result structure for later use 
+            $result['error'] = 'Some fields are still required';
+            $result['errors'] = $errors;
+        } else {
+         // IF there are no errors, proceed...
 
-        // IF subscriber was saved successfully $subscriber_id will be greater than 0
-        if ( $subscriber_id ) {
-            //IF subscriber already has this subscription 
-            if ( slb_subscriber_has_subscription( $subscriber_id, $list_id ) ) {
-                // get list object
-                $list = get_post( $list_id );
+            // attempt to create/save subscriber
+            $subscriber_id = slb_save_subscriber( $subscriber_data );
 
-                // return detailed error
-                $result['message'] .= esc_attr( $subscriber_data['email'] . ' is already subscribed to ' . $list->post_title . '.');
-            }else {
-                // save subscription 
-                $subscription_saved = slb_add_subscription( $subscriber_id, $list_id );
+            // IF subscriber was saved successfully $subscriber_id will be greater than 0
+            if ( $subscriber_id ) {
+                //IF subscriber already has this subscription 
+                if ( slb_subscriber_has_subscription( $subscriber_id, $list_id ) ) {
+                    // get list object
+                    $list = get_post( $list_id );
 
-                // IF subscription was saved successfully 
-                if ( $subscription_saved ) {
-                    //subscription saved!
-                    $result['status'] = 1;
-                    $result['message'] = 'Subscription saved';
+                    // return detailed error
+                    $result['message'] .= esc_attr( $subscriber_data['email'] . ' is already subscribed to ' . $list->post_title . '.');
+                }else {
+                    // save subscription 
+                    $subscription_saved = slb_add_subscription( $subscriber_id, $list_id );
+
+                    // IF subscription was saved successfully 
+                    if ( $subscription_saved ) {
+                        //subscription saved!
+                        $result['status'] = 1;
+                        $result['message'] = 'Subscription saved';
+                    }
                 }
             }
         }
+
     } catch ( Exception $e ){
         // a php error occurred
         $result['error'] = 'Caught exception: ' . $e->getMessage();
