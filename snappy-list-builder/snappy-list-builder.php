@@ -70,12 +70,16 @@ function slb_register_shortcodes() {
 }
 
 // 2.2 
-function slb_form_shortcode($args, $content='')
-{
-	// 	setup our output variable - the form html 
+function slb_form_shortcode($args, $content='') {
+    // get the list id
+    $list_id = 0;
+    if( isset($args['id']) ) $list_id = (int) $args['id'];
+
+	// setup our output variable - the form html 
     $output = '
     <div class="slb">
-        <form id="slb_form" name="slb_form" class="slb-form" method="post">
+        <form id="slb_form" name="slb_form" class="slb-form" method="post" action="/wp-admin/admin-ajax.php?action=slb_save_subscription">
+            <input type="hidden" name="slb_list" value="' . $list_id . '" />
             <p class="slb-input-container">
                 <label>Your Name</label><br/>
                 <input type="text" name="slb_fname" placeholder="First Name" />
@@ -205,8 +209,69 @@ function slb_list_column_data( $column, $post_id ) {
 }
 
 /* !4. EXTERNAL SCRIPTS */
+
 /* !5. ACTIONS */
+
+// 5.1 
+// hint: saves subscription data to an existing or new subscriber 
+function slb_save_subscription() {
+    // setup default result data 
+    $result = array(
+        'status'  => 0,
+        'message' => 'Subscription was not saved.'
+    );
+
+    // array for storing errors 
+    $errors  = array();
+
+    try {
+        // get list_id
+        $list_id =  (int)$_POST['slb_list'];
+
+        // prepare subscriber data
+        $subscriber_data = array(
+            'fname' => esc_attr( $_POST['slb_fname'] ),
+            'lname' => esc_attr( $_POST['slb_lname'] ),
+            'email' => esc_attr( $_POST['slb_email'] ),
+        );
+
+        // attempt to create/save subscriber
+        $subscriber_id = slb_save_subscriber( $subscriber_data );
+
+        // IF subscriber was saved successfully $subscriber_id will be greater than 0
+        if ( $subscriber_id ) {
+            //IF subscriber already has this subscription 
+            if ( slb_subscriber_has_subscription( $subscriber_id, $list_id ) ) {
+                // get list object
+                $list = get_post( $list_id );
+
+                // return detailed error
+                $result['message'] .= esc_attr( $subscriber_data['email'] . ' is already subscribed to ' . $list->post_title . '.');
+            }else {
+                // save subscription 
+                $subscription_saved = slb_add_subscription( $subscriber_id, $list_id );
+
+                // IF subscription was saved successfully 
+                if ( $subscription_saved ) {
+                    //subscription saved!
+                    $result['status'] = 1;
+                    $result['message'] = 'Subscription saved';
+                }
+            }
+        }
+    } catch ( Exception $e ){
+        // a php error occurred
+        $result['error'] = 'Caught exception: ' . $e->getMessage();
+    }
+
+    // return result as JSON
+    slb_return_json($result);
+}
+
 /* !6. HELPERS */
+
 /* !7. CUSTOM POST TYPES */
+
 /* !8. ADMIN PAGES */
+
 /* !9. SETTINGS */
