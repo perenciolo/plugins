@@ -25,6 +25,7 @@ Text Domain: br.com.blackowl.snappy-list-builder
     1.1 - registers all our custom shortcodes on init
     1.2 - register custom admin column headers 
     1.3 - register custom admin column data 
+    1.4 - register ajax actions 
 
 # 2. SHORTCODES
     2.1 - slb_register_shortcodes()
@@ -41,8 +42,17 @@ Text Domain: br.com.blackowl.snappy-list-builder
 # 4. EXTERNAL SCRIPTS
 
 # 5. ACTIONS
+    5.1 - slb_save_subscription()
+    5.2 - slb_save_subscriber()
+    5.3 - slb_add_subscription()
 
 # 6. HELPERS
+    6.1 - slb_subscriber_has_subscription()
+    6.2 - slb_get_subscriber_id()
+    6.3 - slb_get_subscriptions()
+    6.4 - slb_return_json()
+    6.5 - slb_get_acf_key()
+    6.6 - slb_get_subscriber_data()
 
 # 7. CUSTOM POST TYPES
 

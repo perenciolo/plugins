@@ -223,6 +223,16 @@ function slb_list_column_data( $column, $post_id ) {
 
 /* !4. EXTERNAL SCRIPTS */
 
+// 4.1 
+// hint: loads external files into PUBLIC website
+function slb_public_scripts() {
+    // register scripts with WordPress's internal library
+    wp_register_script('snappy-list-builder-js-public', plugins_url('/js/public/snappy-list-builder.js', __FILE__), array('jquery'), '', true);
+
+    // add to que of scripts that get loaded into every page 
+    wp_enqueue_script('snappy-list-builder-js-public');
+}
+
 /* !5. ACTIONS */
 
 // 5.1 
