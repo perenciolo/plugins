@@ -231,7 +231,9 @@ function slb_save_subscription() {
     // setup default result data 
     $result = array(
         'status'  => 0,
-        'message' => 'Subscription was not saved.'
+        'message' => 'Subscription was not saved.',
+        'error'   => '',
+        'errors'  => array()
     );
 
     // array for storing errors 
@@ -275,7 +277,7 @@ function slb_save_subscription() {
                     $list = get_post( $list_id );
 
                     // return detailed error
-                    $result['message'] .= esc_attr( $subscriber_data['email'] . ' is already subscribed to ' . $list->post_title . '.');
+                    $result['error'] = esc_attr( $subscriber_data['email'] . ' is already subscribed to ' . $list->post_title . '.');
                 }else {
                     // save subscription 
                     $subscription_saved = slb_add_subscription( $subscriber_id, $list_id );
@@ -285,6 +287,9 @@ function slb_save_subscription() {
                         //subscription saved!
                         $result['status'] = 1;
                         $result['message'] = 'Subscription saved';
+                    } else {
+                        // return detailed error 
+                        $result['error'] = 'Unable to save subscription.'; 
                     }
                 }
             }
