@@ -20,7 +20,8 @@ Text Domain: br.com.blackowl.snappy-list-builder
     1.4 - register ajax actions 
     1.5 - load external files to public website
     1.6 - Advanced custom fields Settings
-    1.7 - register our custom menus 
+    1.7 - register our custom menus
+    1.8 - load external files in WordPress admin  
 
 2. SHORTCODES
     2.1 - slb_register_shortcodes()
@@ -38,6 +39,7 @@ Text Domain: br.com.blackowl.snappy-list-builder
 4. EXTERNAL SCRIPTS
     4.1 - Include ACF 
     4.2 - slb_public_scripts()
+    4.3 - slb_admin_scripts()
 
 5. ACTIONS
     5.1 - slb_save_subscription()
@@ -101,6 +103,10 @@ if( !defined('ACF_LITE') ) define('ACF_LITE', true); // turn off ACF plugin menu
 // 1.7 
 // hint: register our custom menus 
 add_action('admin_menu', 'slb_admin_menus');
+
+// 1.8 
+// hint: load external files in WordPress admin 
+add_action('admin_enqueue_scripts', 'slb_admin_scripts');
 
 /* !2. SHORTCODES */
 
@@ -297,6 +303,16 @@ function slb_public_scripts() {
     // add to que of scripts that get loaded into every page 
     wp_enqueue_script('snappy-list-builder-js-public');
     wp_enqueue_style('snappy-list-builder-css-public');
+}
+
+// 4.3
+// hint: loads external files into wordpress ADMIN
+function slb_admin_scripts() {
+    // register scripts with WordPress's internal library 
+    wp_register_script('snappy-list-builder-js-private', plugins_url('js/private/snappy-list-builder.js', __FILE__), array('jquery'), '', true);
+
+    // add to que of scripts that get loaded into every admin page
+    wp_enqueue_script('snappy-list-builder-js-private');
 }
 
 /* !5. ACTIONS */

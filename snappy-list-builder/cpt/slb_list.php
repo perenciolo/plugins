@@ -21,7 +21,7 @@ function slb_register_slb_list() {
 		"show_in_rest" => false,
 		"rest_base" => "",
 		"has_archive" => false,
-		"show_in_menu" => true,
+		"show_in_menu" => false,
 		"exclude_from_search" => false,
 		"capability_type" => "post",
 		"map_meta_cap" => true,
