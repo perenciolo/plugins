@@ -76,6 +76,10 @@ add_filter('manage_slb_list_posts_custom_column', 'slb_list_column_data', 1, 2);
 add_action('wp_ajax_nopriv_slb_save_subscription', 'slb_save_subscription'); // regular website visitor
 add_action('wp_ajax_slb_save_subscription', 'slb_save_subscription'); // admin user
 
+// 1.5 
+// hint: load external files to public website
+add_action('wp_enqueue_scripts', 'slb_public_scripts');
+
 /* !2. SHORTCODES */
 
 // 2.1 
