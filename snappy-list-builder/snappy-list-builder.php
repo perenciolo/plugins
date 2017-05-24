@@ -50,6 +50,7 @@ Text Domain: br.com.blackowl.snappy-list-builder
 
 7. CUSTOM POST TYPES
     7.1 - Include subscribers post type
+    7.2 - Include lists custom post type
 
 8. ADMIN PAGES
 
@@ -564,6 +565,10 @@ function slb_get_subscriber_data( $subscriber_id ) {
 // 7.1
 // hint: Include subscribers custom post type
 include_once( plugin_dir_path(__FILE__)  . '/cpt/slb_subscriber.php');
+
+// 7.2
+// hint: Include lists custom post type
+include_once( plugin_dir_path(__FILE__)  . '/cpt/slb_list.php');
 
 /* !8. ADMIN PAGES */
 
