@@ -18,6 +18,9 @@ Text Domain: br.com.blackowl.snappy-list-builder
     1.2 - register custom admin column headers 
     1.3 - register custom admin column data 
     1.4 - register ajax actions 
+    1.5 - load external files to public website
+    1.6 - Advanced custom fields Settings
+    1.7 - register our custom menus 
 
 2. SHORTCODES
     2.1 - slb_register_shortcodes()
@@ -30,6 +33,7 @@ Text Domain: br.com.blackowl.snappy-list-builder
         3.2.2  - slb_custom_admin_titles()
     3.3 - slb_list_column_headers()
     3.4 - slb_list_column_data()
+    3.5 - slb_admin_menus()
 
 4. EXTERNAL SCRIPTS
     4.1 - Include ACF 
@@ -53,6 +57,9 @@ Text Domain: br.com.blackowl.snappy-list-builder
     7.2 - Include lists custom post type
 
 8. ADMIN PAGES
+    8.1 - slb_dashboard_admin_page()
+    8.2 - slb_import_admin_page()
+    8.3 - slb_options_admin_page()
 
 9. SETTINGS
 
@@ -90,6 +97,10 @@ add_filter('acf/settings/path', 'slb_acf_settings_path');
 add_filter('acf/settings/dir', 'slb_acf_settings_dir');
 add_filter('acf/settings/show_admin', 'slb_acf_show_admin');
 if( !defined('ACF_LITE') ) define('ACF_LITE', true); // turn off ACF plugin menu
+
+// 1.7 
+// hint: register our custom menus 
+add_action('admin_menu', 'slb_admin_menus');
 
 /* !2. SHORTCODES */
 
@@ -244,6 +255,31 @@ function slb_list_column_data( $column, $post_id ) {
     // echo the output 
     echo $output;
 }
+
+// 3.5
+// hint: registers custom plugin admin menus 
+function slb_admin_menus() {
+    /* main menu */
+    $top_menu_item = 'slb_dashboard_admin_page';
+
+    add_menu_page('', 'List Builder', 'manage_options', 'slb_dashboard_admin_page', 'slb_dashboard_admin_page', 'dashicons-email-alt');
+
+    /* submenu items */
+    // dashboard 
+    add_submenu_page( $top_menu_item, '', 'Dashboard', 'manage_options', $top_menu_item, $top_menu_item );  
+
+    // email lists 
+    add_submenu_page( $top_menu_item, '', 'E-mail Lists', 'manage_options', 'edit.php?post_type=slb_list' );
+
+    // subscribers 
+    add_submenu_page( $top_menu_item, '', 'Subscribers', 'manage_options', 'edit.php?post_type=slb_subscriber' );
+
+    // import subscribers 
+    add_submenu_page( $top_menu_item, '', 'Import Subscribers', 'manage_options', 'slb_import_admin_page', 'slb_import_admin_page' );
+
+    // plugin options 
+    add_submenu_page( $top_menu_item, '', 'Plugin Options', 'manage_options', 'slb_options_admin_page', 'slb_options_admin_page' );
+} 
 
 /* !4. EXTERNAL SCRIPTS */
 
@@ -571,5 +607,52 @@ include_once( plugin_dir_path(__FILE__)  . '/cpt/slb_subscriber.php');
 include_once( plugin_dir_path(__FILE__)  . '/cpt/slb_list.php');
 
 /* !8. ADMIN PAGES */
+
+// 8.1 
+// hint: dashboard admin page 
+function slb_dashboard_admin_page() {
+    $output = '
+        <div class="wrap">
+            <?php screen_icon(); ?>
+            <h2>Snappy List Builder</h2>
+            <p>
+                The ultimate email list building plugin for WordPress. 
+                Capture new subscribers. 
+                Reward subscribers with a custom download upon opt-in. 
+                Build unlimited lists. 
+                Import and export subscribers easily with .csv
+            </p>
+        </div>
+    ';
+
+    echo $output;
+}
+
+// 8.2 
+// hint: import subscribers admin page
+function slb_import_admin_page() {
+    $output = '
+        <div class="wrap">
+            <h2>Import Subscribers</h2>
+            <p>Page description...</p>
+        </div>
+    ';
+
+    echo $output;
+}
+
+// 8.3 
+// hint: plugin options admin page
+function slb_options_admin_page() {
+    $output = '
+        <div class="wrap">
+            <h2>Snappy List Builder Options</h2>
+            <p>Pager description...</p>
+        </div>
+    ';
+
+    echo $output;
+}
+
 
 /* !9. SETTINGS */
