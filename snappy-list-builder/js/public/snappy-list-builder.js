@@ -1,7 +1,7 @@
 // wait until the page and jQuery have loaded before running the code below 
 jQuery(document).ready(function ($) {
     // setup our wp ajax URL 
-    var wpAjaxUrl = document.location.protocol + '//' + document.location.host + '/wpc/wp-admin/admin-ajax.php';
+    var wpAjaxUrl = document.location.protocol + '//' + document.location.host + document.location.pathname + 'wp-admin/admin-ajax.php';
 
     // email capture action url 
     var emailCaptureUrl = wpAjaxUrl + '?action=slb_save_subscription';

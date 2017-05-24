@@ -32,6 +32,8 @@ Text Domain: br.com.blackowl.snappy-list-builder
     3.4 - slb_list_column_data()
 
 4. EXTERNAL SCRIPTS
+    4.1 - Include ACF 
+    4.2 - slb_public_scripts()
 
 5. ACTIONS
     5.1 - slb_save_subscription()
@@ -47,6 +49,7 @@ Text Domain: br.com.blackowl.snappy-list-builder
     6.6 - slb_get_subscriber_data()
 
 7. CUSTOM POST TYPES
+    7.1 - Include subscribers post type
 
 8. ADMIN PAGES
 
@@ -80,6 +83,13 @@ add_action('wp_ajax_slb_save_subscription', 'slb_save_subscription'); // admin u
 // hint: load external files to public website
 add_action('wp_enqueue_scripts', 'slb_public_scripts');
 
+// 1.6 
+// hint: Advanced custom fields Settings
+add_filter('acf/settings/path', 'slb_acf_settings_path');
+add_filter('acf/settings/dir', 'slb_acf_settings_dir');
+add_filter('acf/settings/show_admin', 'slb_acf_show_admin');
+if( !defined('ACF_LITE') ) define('ACF_LITE', true); // turn off ACF plugin menu
+
 /* !2. SHORTCODES */
 
 // 2.1 
@@ -94,20 +104,29 @@ function slb_form_shortcode($args, $content='') {
     $list_id = 0;
     if( isset($args['id']) ) $list_id = (int) $args['id'];
 
+    // title 
+    $title = '';
+    if( isset($args['title']) ) $title = (string)$args['title']; 
+
 	// setup our output variable - the form html 
     $output = '
     <div class="slb">
         <form id="slb_form" name="slb_form" class="slb-form" method="post" action="'. get_site_url() .'/wp-admin/admin-ajax.php?action=slb_save_subscription">
-            <input type="hidden" name="slb_list" value="' . $list_id . '" />
-            <p class="slb-input-container">
-                <label>Your Name</label><br/>
-                <input type="text" name="slb_fname" placeholder="First Name" />
-                <input type="text" name="slb_lname" placeholder="Last Name" />
-            </p>
-            <p class="slb-input-container">
-                <label>Your Email</label><br/>
-                <input type="email" name="slb_email" placeholder="example@email.com" />
-            </p>';
+            <input type="hidden" name="slb_list" value="' . $list_id . '" />';
+            
+    if( strlen($title) ) {
+        $output .= '<h3 class="slb-title">' . $title . '</h3>';
+    }        
+
+    $output .= '<p class="slb-input-container">
+        <label>Your Name</label><br/>
+        <input type="text" name="slb_fname" placeholder="First Name" />
+        <input type="text" name="slb_lname" placeholder="Last Name" />
+    </p>
+    <p class="slb-input-container">
+        <label>Your Email</label><br/>
+        <input type="email" name="slb_email" placeholder="example@email.com" />
+    </p>';
 	
 	// 	including content in your form if content is passed into the function
     if(strlen($content)):
@@ -228,13 +247,19 @@ function slb_list_column_data( $column, $post_id ) {
 /* !4. EXTERNAL SCRIPTS */
 
 // 4.1 
+// hint: Include ACF 
+include_once( plugin_dir_path(__FILE__) . 'lib/advanced-custom-fields/acf.php' );
+
+// 4.2 
 // hint: loads external files into PUBLIC website
 function slb_public_scripts() {
     // register scripts with WordPress's internal library
     wp_register_script('snappy-list-builder-js-public', plugins_url('/js/public/snappy-list-builder.js', __FILE__), array('jquery'), '', true);
+    wp_register_style('snappy-list-builder-css-public', plugins_url('/css/public/snappy-list-builder.css', __FILE__));
 
     // add to que of scripts that get loaded into every page 
     wp_enqueue_script('snappy-list-builder-js-public');
+    wp_enqueue_style('snappy-list-builder-css-public');
 }
 
 /* !5. ACTIONS */
@@ -535,6 +560,10 @@ function slb_get_subscriber_data( $subscriber_id ) {
 }
 
 /* !7. CUSTOM POST TYPES */
+
+// 7.1
+// hint: Include subscribers custom post type
+include_once( plugin_dir_path(__FILE__)  . '/cpt/slb_subscriber.php');
 
 /* !8. ADMIN PAGES */
 
