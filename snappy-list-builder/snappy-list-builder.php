@@ -126,6 +126,7 @@ add_action('admin_init', 'slb_register_options');
 function slb_register_shortcodes() {
 	
 	add_shortcode('slb_form', 'slb_form_shortcode');
+	add_shortcode('slb_manage_subscriptions', 'slb_manage_subscriptions_shortcode');
 	
 }
 
@@ -923,6 +924,66 @@ function slb_get_current_options() {
 	// return current options
 	return $current_options;
 	
+}
+
+// 6.11 
+// hint: 
+function slb_get_manage_subscriptions_html( $subscriber_id ) {
+    $output = '';
+
+    try {
+        // get array of list_ids for this subscriber 
+        $lists = slb_get_subscriptions( $subscriber_id );
+
+        // get the subscriber data 
+        $subscriber_data = slb_get_subscriber_data( $subscriber_id );
+
+        // set the title 
+        $title = $subscriber_data['fname'] . '\'s Subscriptions';
+
+        // build out output html 
+        $output = '
+            <form action="/wp-admin/admin-ajax.php?action=slb_unsubscribe" method="post" id="slb_manage_subscriptions_form" class="slb-form">
+                <input type="hidden" name="subscriber_id" value=" ' . $subscriber_id . ' " />
+                <h3 class="slb-title"> ' . $title . ' </h3>';
+
+                if( !count($lists) ) {
+                    $output .= '<p>There are no active subscriptions.</p>';
+                } else {
+                    $output .= '
+                    <table>
+                        <tbody>
+                        ';
+                        // loop over lists 
+                        foreach( $lists as &$list_id ) {
+                            $list_object = get_post( $list_id );
+
+                            $output .= '
+                            <tr>
+                                <td> ' . $list_object->post_title . ' </td>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="list_ids[]" value=" ' . $list_object->ID . ' " /> UNSUBSCRIBE
+                                    </label>
+                                </td>
+                            </tr>';
+                        }
+
+                    // close up our output html     
+                    $output .= '</tbody>
+                    </table>
+
+                    <p><input type="submit" value="Save Changes" /></p>';
+                }
+
+            $output .= '</form>';
+
+    } catch (Exception $e) {
+        // php error
+    }
+
+    // return output
+    return $output;
 }
 
 
